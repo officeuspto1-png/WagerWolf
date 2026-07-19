@@ -9,12 +9,6 @@ __pycache__/
 venv/
 env/
 .venv/
-*.egg-info/
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
 
 # Logs
 *.log
@@ -22,7 +16,6 @@ env/
 # IDE
 .vscode/
 .idea/
-*.swp
 
 # OS
 .DS_Store
