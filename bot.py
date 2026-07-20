@@ -4,8 +4,6 @@
 import logging
 import sys
 import os
-import threading
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -18,32 +16,6 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
-
-# ==================== HEALTHCHECK SERVER ====================
-class HealthCheckHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        if self.path == '/' or self.path == '/health':
-            self.send_response(200)
-            self.send_header('Content-type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(b'🐺 WagerWolf is hunting!')
-        else:
-            self.send_response(404)
-            self.end_headers()
-    
-    def log_message(self, format, *args):
-        # Suppress healthcheck logs
-        return
-
-def run_healthcheck_server():
-    """Run a simple HTTP server for Railway healthchecks"""
-    try:
-        port = int(os.environ.get('PORT', 8080))
-        server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
-        logger.info(f"🏥 Healthcheck server running on port {port}")
-        server.serve_forever()
-    except Exception as e:
-        logger.error(f"Healthcheck server error: {e}")
 
 # ==================== COMMAND HANDLERS ====================
 
@@ -70,14 +42,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def hunt_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Hunt command"""
     await update.message.reply_text(
-        f"""
+        """
 🐺 *The Wolf is hunting...* 🔍
-
-Your token: {os.environ.get('BOT_TOKEN', 'Not set')[:10]}...
 
 Searching for the best crypto odds!
 
-⚠️ This is a test version. Full features coming soon!
+⚠️ Full features coming soon! Stay tuned.
 """,
         parse_mode='Markdown'
     )
@@ -103,11 +73,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     """Start the bot"""
     try:
-        # Start healthcheck server in background thread
-        health_thread = threading.Thread(target=run_healthcheck_server, daemon=True)
-        health_thread.start()
-        logger.info("🏥 Healthcheck server started")
-        
         # Get token
         token = os.getenv('BOT_TOKEN')
         if not token:
@@ -115,6 +80,7 @@ def main():
             sys.exit(1)
         
         logger.info("🐺 WagerWolf is starting...")
+        logger.info(f"📡 BOT_TOKEN: {token[:10]}...")
         
         # Create application
         application = Application.builder().token(token).build()
