@@ -9,6 +9,7 @@ __pycache__/
 venv/
 env/
 .venv/
+*.egg-info/
 
 # Logs
 *.log
@@ -16,6 +17,7 @@ env/
 # IDE
 .vscode/
 .idea/
+*.swp
 
 # OS
 .DS_Store
